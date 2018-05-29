@@ -4,10 +4,12 @@
 import sys, os
 import matplotlib.pyplot as plt
 import numpy as np
+from operator import add
+from operator import sub
 
-plt.rcParams["font.family"] = "Times New Roman"
 
 plt.style.use('seaborn-whitegrid')
+plt.rcParams["font.family"] = "Times New Roman"
 
 # dataset filepaths
 avg_temp_filepath = "./Complete_TAVG_complete.txt"
@@ -36,13 +38,14 @@ for line in temp_data:
 
 # make temp plot
 plt.subplot(211)
-plt.plot(temp_year, temp_avg)
-# plt.fill_between(temp_year, temp_avg-temp_unc, temp_avg+temp_unc)
+plt.plot(temp_year, temp_avg, label='$^\circ$C deviation')
+plt.fill_between(temp_year, map(sub, temp_avg, temp_unc), map(add, temp_avg, temp_unc), color='lightgray', label='error')
 # plt.errorbar(temp_year, temp_avg, yerr=temp_unc)
 plt.xlim(1750,2018)
 plt.xlabel("Year")
 plt.ylabel("$^\circ$C deviation")
 plt.title("$^\circ$C deviation, based on average between 1951-1980, from 1750")
+plt.legend(loc='upper center')
 
 # extract co2 data
 with open(avg_co2_filepath, "r") as co2:
@@ -61,6 +64,14 @@ for line in co2_data:
 		else:
 			co2_year.append(year)
 			co2_avg.append(float(splt[5]))
+
+for x, elem in enumerate(co2_avg):
+	x+=1
+	try:
+		co2_avg[x] = (elem+co2_avg[x])/2.
+	except:
+		break
+	x+=1
 
 plt.subplot(212)
 plt.plot(co2_year, co2_avg)
